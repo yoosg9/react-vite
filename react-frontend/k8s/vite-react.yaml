@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-vite
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: react-vite
+  template:
+    metadata:
+      labels:
+        app: react-vite
+    spec:
+      containers:
+        - name: react-vite
+          image: asia-northeast3-docker.pkg.dev/rock-star-451301-e4/react-repo/react-vite:latest
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: react-vite
+spec:
+  selector:
+    app: react-vite
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
