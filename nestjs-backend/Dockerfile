@@ -5,8 +5,7 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy package.json and install dependencies
-COPY /react-frontend/package.json /react-frontend/package-lock.json ./
-RUN cd /react-frontend
+COPY package.json package-lock.json ./
 RUN npm install --legacy-peer-deps
 
 # Copy application code

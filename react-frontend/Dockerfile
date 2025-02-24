@@ -1,8 +1,7 @@
 # Build 단계
 FROM node:18 AS build
 WORKDIR /app
-COPY /react-frontend/package.json /react-frontend/package-lock.json ./
-RUN cd /react-frontend
+COPY package.json package-lock.json ./
 RUN npm install
 COPY . .
 RUN npm run build
