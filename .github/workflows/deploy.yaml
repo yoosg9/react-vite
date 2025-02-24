@@ -20,35 +20,49 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      # Set up Google Cloud SDK and Authenticate Google Cloud
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
+      # Authenticate Docker with Artifact Registry
       - name: Authenticate Docker with Artifact Registry
-        run: gcloud auth configure-docker asia-northeast3-docker.pkg.dev
-
-      - name: Restore GCP Service Account Key
         run: |
-          echo "${{ secrets.GCP_SA_KEY }}" | base64 --decode > $HOME/gcloud-key.json
+          echo "Authenticating Docker with Artifact Registry" 
+          gcloud auth configure-docker asia-northeast3-docker.pkg.dev
+
+      # Authenticate Google Cloud (Optional: Direct gcloud authentication)
+      - name: Authenticate Google Cloud
+        run: |
+          echo "Authenticating with Google Cloud" 
+          echo "${{ secrets.GCP_SA_KEY }}" | base64 --decode > $HOME/gcloud-key.json 
           gcloud auth activate-service-account --key-file=$HOME/gcloud-key.json
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
+      # Build & Push React Frontend Docker Image
       - name: Build & Push React Frontend Docker Image
         run: |
+          echo "Building and pushing React Frontend Docker Image" 
           docker build -t $DOCKER_IMAGE_FRONTEND -f react-frontend/Dockerfile react-frontend/
           docker push $DOCKER_IMAGE_FRONTEND
 
+      # Build & Push NestJS Backend Docker Image
       - name: Build & Push NestJS Backend Docker Image
         run: |
+          echo "Building and pushing NestJS Backend Docker Image" 
           docker build -t $DOCKER_IMAGE_BACKEND -f nestjs-backend/Dockerfile react-backend/
           docker push $DOCKER_IMAGE_BACKEND
 
+      # Configure kubectl to interact with GKE cluster
       - name: Configure kubectl
         run: |
+          echo "Configuring kubectl" 
           gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $PROJECT_ID
 
+      # Deploy to GKE
       - name: Deploy to GKE
         run: |
+          echo "Deploying to GKE"
           kubectl apply -f k8s/
