@@ -33,11 +33,11 @@ jobs:
           echo "Authenticating Docker with Artifact Registry" 
           gcloud auth configure-docker asia-northeast3-docker.pkg.dev
 
-      # Authenticate Google Cloud (Optional: Direct gcloud authentication)
+        # Authenticate Google Cloud using service account key
       - name: Authenticate Google Cloud
         run: |
-          echo "Authenticating with Google Cloud" 
-          echo "${{ secrets.GCP_SA_KEY }}" | base64 --decode > $HOME/gcloud-key.json 
+          echo "Authenticating with Google Cloud"
+          echo "${{ secrets.GCP_SA_KEY }}" > $HOME/gcloud-key.json  
           gcloud auth activate-service-account --key-file=$HOME/gcloud-key.json
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
