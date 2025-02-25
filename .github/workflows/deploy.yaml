@@ -10,7 +10,7 @@ env:
   GKE_CLUSTER: ${{ secrets.GKE_CLUSTER_NAME }}
   GKE_ZONE: ${{ secrets.GKE_ZONE }}
   DOCKER_IMAGE_FRONTEND: asia-northeast3-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/react-repo/react-vite:latest
-  DOCKER_IMAGE_BACKEND: asia-northeast3-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/nestjs-repo/nestjs-backend:latest
+  DOCKER_IMAGE_BACKEND: asia-northeast3-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/nestjs-repo/nestjs-gke:latest
 
 jobs:
   deploy:
