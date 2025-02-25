@@ -65,4 +65,5 @@ jobs:
       - name: Deploy to GKE
         run: |
           echo "Deploying to GKE"
-          kubectl apply -f k8s/
+          kubectl apply -f react-frontend/k8s/
+          kubectl apply -f nestjs-backend/k8s/
