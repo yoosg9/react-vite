@@ -1,7 +1,0 @@
-apiVersion: networking.gke.io/v1
-kind: ManagedCertificate
-metadata:
-  name: my-managed-cert
-spec:
-  domains:
-    - myapp.example.com # ⚡ 실제 사용할 도메인으로 변경!
