@@ -1,16 +1,9 @@
-name: Deploy to GKE
+name: Deploy to GKE (React + NestJS)
 
 on:
   push:
     branches:
-      - main # 🚀 main 브랜치에 push할 때 자동 실행
-
-env:
-  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  GKE_CLUSTER: ${{ secrets.GKE_CLUSTER_NAME }}
-  GKE_ZONE: ${{ secrets.GKE_ZONE }}
-  DOCKER_IMAGE_FRONTEND: asia-northeast3-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/react-repo/react-vite:latest
-  DOCKER_IMAGE_BACKEND: asia-northeast3-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/nestjs-repo/nestjs-gke:latest
+      - main
 
 jobs:
   deploy:
@@ -19,6 +12,11 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
       # Set up Google Cloud SDK and Authenticate Google Cloud
       - name: Set up Google Cloud SDK
@@ -38,37 +36,17 @@ jobs:
           echo "Authenticating Docker with Artifact Registry" 
           gcloud auth configure-docker asia-northeast3-docker.pkg.dev
 
-        # Authenticate Google Cloud using service account key
-      - name: Authenticate Google Cloud
-        run: |
-          echo "Authenticating with Google Cloud"
-          echo '${{ secrets.GCP_SA_KEY }}' > $HOME/gcloud-key.json  
-          gcloud auth activate-service-account --key-file=$HOME/gcloud-key.json
-          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+      # - name: Set up kubectl
+      #   uses: azure/setup-kubectl@v3
+      #   with:
+      #     version: "latest"
 
-      # Build & Push React Frontend Docker Image
-      - name: Build & Push React Frontend Docker Image
-        run: |
-          echo "Building and pushing React Frontend Docker Image" 
-          docker build -t $DOCKER_IMAGE_FRONTEND -f react-frontend/Dockerfile react-frontend/
-          docker push $DOCKER_IMAGE_FRONTEND
+      - name: Get GKE Credentials
+        run: gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $PROJECT_ID
 
-      # Build & Push NestJS Backend Docker Image
-      - name: Build & Push NestJS Backend Docker Image
-        run: |
-          echo "Building and pushing NestJS Backend Docker Image" 
-          docker build -t $DOCKER_IMAGE_BACKEND -f nestjs-backend/Dockerfile nestjs-backend/
-          docker push $DOCKER_IMAGE_BACKEND
-
-      # Configure kubectl to interact with GKE cluster
-      - name: Configure kubectl
-        run: |
-          echo "Configuring kubectl" 
-          gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $PROJECT_ID
-
-      # Deploy to GKE
       - name: Deploy to GKE
         run: |
-          echo "Deploying to GKE"
           kubectl apply -f react-frontend/k8s/
           kubectl apply -f nestjs-backend/k8s/
+          kubectl rollout status deployment/react-vite
+          kubectl rollout status deployment/nestjs-backend
