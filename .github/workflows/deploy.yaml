@@ -52,7 +52,7 @@ jobs:
       - name: Build & Push NestJS Backend Docker Image
         run: |
           echo "Building and pushing NestJS Backend Docker Image" 
-          docker build -t $DOCKER_IMAGE_BACKEND -f nestjs-backend/Dockerfile react-backend/
+          docker build -t $DOCKER_IMAGE_BACKEND -f nestjs-backend/Dockerfile nestjs-backend/
           docker push $DOCKER_IMAGE_BACKEND
 
       # Configure kubectl to interact with GKE cluster
