@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Copy package.json and install dependencies
 COPY /nestjs-backend/package.json /nestjs-backend/package-lock.json ./
-RUN cd /nestjs-backend
+# RUN cd /nestjs-backend
 RUN npm install --legacy-peer-deps
 
 # Copy application code
