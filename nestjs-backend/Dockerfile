@@ -5,7 +5,8 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy package.json and install dependencies
-COPY package.json package-lock.json ./
+COPY /nestjs-backend/package.json /nestjs-backend/package-lock.json ./
+RUN cd /nestjs-backend
 RUN npm install --legacy-peer-deps
 
 # Copy application code
